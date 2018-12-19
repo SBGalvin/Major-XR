@@ -1,0 +1,116 @@
+a, a > code {
+  color: rgb(249, 38, 114);
+  text-decoration: none;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*Title Slide*/
+
+.title-slide {
+  background-image: url(TidyHexWall.png);
+  background-size: cover;
+  vertical-align: bottom !important; 
+  text-align: left !important;
+}
+/*Text Colour*/
+  .title-slide h1 , h2, h3{
+    color: #000000;
+    font-weight: bold;
+    margin: 10px;
+    background-color: #ffffff;
+    opacity: 0.8;
+    filter: alpha(opacity=60);
+  }
+  
+  /* Remove slide count */
+.title-slide .remark-slide-number {
+  text-shadow: none;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.footnote {
+  position: absolute;
+  bottom: 3em;
+  padding-right: 4em;
+  font-size: 90%;
+}
+.remark-code-line-highlighted     { background-color: #ffff88; }
+    
+    .inverse {
+      background-color: #272822;
+        color: #d6d6d6;
+        text-shadow: 0 0 20px #333;
+    }
+  /*Text for headers*/
+    .inverse h1, .inverse h2, .inverse h3 {
+      color: #2A2A2A;
+    }
+  /* Background layer with an image */
+    .backdrop {
+      background-image: url("Images/TidyHexWall.png"); 
+      background-size: cover;
+    }
+  
+  /* Text Size modulator */
+    .small { font-size: 50% }
+  
+  /* Two-column layout */
+    .left-column {
+      color: #777;
+        width: 20%;
+      height: 92%;
+      float: left;
+    }
+  .left-column h2:last-of-type, .left-column h3:last-child {
+    color: #000;
+  }
+  .right-column {
+    width: 75%;
+    float: right;
+    padding-top: 1em;
+  }
+  .pull-left {
+    float: left;
+    width: 47%;
+  }
+  .pull-right {
+    float: right;
+    width: 47%;
+  }
+  .pull-right ~ * {
+    clear: both;
+  }
+  img, video, iframe {
+    max-width: 100%;
+  }
+  blockquote {
+    border-left: solid 5px lightgray;
+    padding-left: 1em;
+  }
+  /* Dark colour, white font */
+    /* Background image, size, positon new */
+    .remark-slide-content {
+      background-color: #ffffff;
+        font-size: 20px;
+      color: #2A2A2A;
+    }
+  .remark-slide table {
+    margin: auto;
+    border-top: 1px solid #666;
+    border-bottom: 1px solid #666;
+  }
+  .remark-slide table thead th { border-bottom: 1px solid #ddd; }
+    th, td { padding: 5px; }
+    .remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) { background: #eee }
+        
+        @page { margin: 0; }
+      @media print {
+        .remark-slide-scaler {
+          width: 100% !important;
+          height: 100% !important;
+          transform: scale(1) !important;
+          top: 0 !important;
+          left: 0 !important;
+        }
+      }
+      

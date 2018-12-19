@@ -1,0 +1,12 @@
+this is html code for knockout text
+
+<div class="backdrop" align="center">
+  <p class="textA">Tidyverse</p>
+</div>
+ ---
+
+This slide has text in a white box using the textB class
+<div class="image-container">
+  <p class="textB">TIDYVERSE<br/>An Introduction<br/><i>SB Galvin</i></p>
+</div> 
+ ---

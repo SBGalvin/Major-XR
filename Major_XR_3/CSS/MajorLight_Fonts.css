@@ -1,0 +1,18 @@
+@import url(https://fonts.googleapis.com/css?family=Rubik:Light);
+@import url(https://fonts.googleapis.com/css?family=Roboto:Regular);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+
+
+h1 h2, h3 {
+  font-family: 'Rubik';
+  font-weight: normal;
+}
+
+body{font-family: 'Roboto';}
+
+.remark-code, .remark-inline-code {font-family: 'Ubuntu Mono'; font-size: 55%;
+}
+
+.textB{font-family: "Roboto";
+}
