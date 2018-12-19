@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tidyverse</title>
+    <meta charset="utf-8">
+    <meta name="author" content="SB Galvin" />
+    <link rel="stylesheet" href="Major_XR_3\CSS\MajorLight.css" type="text/css" />
+    <link rel="stylesheet" href="Major_XR_3\CSS\MajorLight_Fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: bottom, center, title-slide
+
+# Tidyverse
+## …an introduction
+### SB Galvin
+
+---
+
+
+
+
+# Todays session
+In todays materials, there are two csv files, a practice script and a solutions script
+&lt;/br&gt;&lt;br&gt;
+&lt;/br&gt;&lt;br&gt;
+.pull-left[
+For todays materals    
+Go to https://github.com/SBGalvin/Major-XR.git
+]
+.pull-right[
+&lt;div align="center"&gt;
+&lt;img src="Major_XR_3/Images/github-brands.svg"width=300 height=300&gt;
+&lt;/div&gt;
+]
+
+.footnote[Github icon: https://fontawesome.com/license]
+---
+# Tidyverse
+Tidyverse is a collection of packages based on the same styling under the **Grammar of Data Manipulation**.  
+A function is a **verb** it does something to arguments
+.pull-left[
+- web page:    https://www.tidyverse.org/
+- style guide: https://style.tidyverse.org/index.html
+]
+
+.pull-right[
+&lt;div align="center"&gt;
+&lt;img src="Major_XR_3/Images/tidyverse.svg"width=300 height=300&gt;
+&lt;/div&gt;
+
+]
+???
+So today we're going to talk a little about the tidyverse
+As we can see there are quite a few packages some to do with specialist areas
+However there are core packages, such as dplyr, ggplot2 and magritter that you will use alot
+---
+# Tidyverse
+
+First we load up the necessary packages and options. 
+If you are missing these packages use **install.packages("tidyverse")**
+&lt;/br&gt;&lt;br&gt;
+&lt;/br&gt;&lt;br&gt;
+&lt;/br&gt;&lt;br&gt;
+
+.pull-left[
+
+```r
+# so we dont get any awkard factorisation of dates
+# values are numeric and not scientific notation
+options(stringsAsFactors = FALSE, scipen = 999) 
+# reproducible randomness
+set.seed(42)
+# for colour pallete in boxplot
+library(viridis)
+# for times and dates
+library(lubridate)
+# for %&gt;% , dplyr, ggplot2
+library(tidyverse)
+```
+]
+
+.pull-right[
+Loading tidyverse will load a number of useful packages including dplyr, maggritr and ggplot2  
+Lubridate is for dates and times
+Virdis is a colour pallete scheme for high contrasts
+]
+---
+# Dplyr
+Dplyr is a package for manipulating data
+.pull-left[
+- filter() factors
+- mutate() variables
+- summarise() variables
+]
+.pull-right[
+&lt;div align="center"&gt;
+&lt;img src="Major_XR_3/Images/dplyr.svg"width=300 height=300&gt;
+&lt;/div&gt;
+]
+???
+So what is the tidyverse:
+
+- A collection of packages
+- designed under one aesthetic
+- functions are meant to be more readable
+- and have more descriptive names than base R
+---
+
+# "Ceci n'est pas une pipe"
+We can chain dplyr functions together using the pipe operator %&gt;%.    
+.pull-left[
+
+```r
+input_dataframe %&gt;% 
+  # Filter out unwanted Factor levels
+  filter(Factor != "UNWANTED_LEVEL") %&gt;% 
+  # transform the response value for on factor level
+  mutate(Response = ifelse(Factor == "WANTED_LEVEL_A", 
+                           # If Condition ==TRUE
+                           (Response)*-1, 
+                           # If Condition == FALSE
+                           Response)) %&gt;% 
+  select(Factor, Response) -&gt;&gt; output_dataframe
+```
+]
+
+.pull-right[
+&lt;div align="center"&gt;
+&lt;img src="Major_XR_3/Images/pipe.svg" width=300 height=300&gt;
+&lt;/div&gt;
+
+]
+---
+# Long Format Data
+
+We are used to long format data in science or social science
+
+- Each Row is a unique observation
+- Can have multiple rows per observation if using repeated measures
+- Each column is a variable
+
+This is the key to plotting multivariate data  
+
+.pull-left[
+Wide Dataframe
+
+```r
+x &lt;- data.frame(A = c(1, 2, 3),
+                B = c(4, 5, 6))
+x
+```
+
+```
+##   A B
+## 1 1 4
+## 2 2 5
+## 3 3 6
+```
+]
+
+.pull-right[
+Long Dataframe
+
+```r
+y &lt;- data_frame(ID = c("a", "b", "c", "d", "e", "f"),
+                Group = c("A", "A", "A", "B", "B", "B"),
+                Resp  = c(1, 2, 3, 4, 5, 6))
+y
+```
+
+```
+## # A tibble: 6 x 3
+##   ID    Group  Resp
+##   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
+## 1 a     A         1
+## 2 b     A         2
+## 3 c     A         3
+## 4 d     B         4
+## 5 e     B         5
+## 6 f     B         6
+```
+]
+---
+
+# Wide to Long
+
+.pull-left[
+We can transform from wide to long with **gather**
+
+```r
+x %&gt;% gather(Group, Resp, A:B) %&gt;% group_by(Group)
+```
+
+```
+## # A tibble: 6 x 2
+## # Groups:   Group [2]
+##   Group  Resp
+##   &lt;chr&gt; &lt;dbl&gt;
+## 1 A         1
+## 2 A         2
+## 3 A         3
+## 4 B         4
+## 5 B         5
+## 6 B         6
+```
+]
+.pull-right[
+We can transform from long to wide with **spread**
+
+```r
+y %&gt;% spread(Group, Resp)
+```
+
+```
+## # A tibble: 6 x 3
+##   ID        A     B
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 a         1    NA
+## 2 b         2    NA
+## 3 c         3    NA
+## 4 d        NA     4
+## 5 e        NA     5
+## 6 f        NA     6
+```
+
+]
+---
+# Summarising
+Summarising data is pretty quick, easy, and it is formatted for file output
+.pull-left[
+
+```r
+data_frame(A = rnorm(350, 75, 11.2),
+           B = rnorm(350, 45, 16),
+           C = rnorm(350, 90, 14.5),
+           D = rnorm(350, 100, 15))%&gt;% 
+  # from wide to long
+  gather(Group, Response, A:D) %&gt;% 
+  # Create Sex variable
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %&gt;% 
+  # use grouping variables
+  group_by(Group, Sex) %&gt;%
+  # summary values
+  summarise(N = n(),
+            Mean = mean(Response), # Mean
+            StDev = sd(Response),  # Sd
+            StErr = StDev/sqrt(N), # SE
+            # Confidence intervals
+            `95% L Bound` = Mean - (StErr *1.96),
+            `95% U Bound` = Mean + (StErr *1.96)) %&gt;% 
+  # round the columns
+  mutate_at(3:5, funs(round(., 2)))
+```
+]
+.pull-right[
+
+```
+## # A tibble: 8 x 8
+## # Groups:   Group [4]
+##   Group Sex       N  Mean StDev StErr `95% L Bound` `95% U Bound`
+##   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+## 1 A     F       177  75.2  11.0  0.83          73.5          76.8
+## 2 A     M       173  74.2  10.5  0.8           72.6          75.8
+## 3 B     F       177  44.2  17.7  1.33          41.6          46.8
+## 4 B     M       173  44.6  14.4  1.1           42.4          46.7
+## 5 C     F       184  90.9  14.7  1.09          88.8          93.0
+## 6 C     M       166  88.1  15.5  1.2           85.7          90.4
+## 7 D     F       187 100.   14.2  1.04          98.3         102. 
+## 8 D     M       163  98.9  14.6  1.14          96.7         101.
+```
+]
+---
+# GGplot2
+GGplot2 is a high quality package for plotting. Layers are bult up from data to produce an output using the + operator
+.pull-left[
+- aes(): Aesthetic layer/ Data
+- geom_...(): geometry layer/ plot style
+- scale_axis_type(): scale definition layer
+]
+
+.pull-right[
+&lt;div align="center"&gt;
+&lt;img src="Major_XR_3/Images/ggplot2.svg"width=300 height=300&gt;
+&lt;/div&gt;
+]
+---
+# GGplot2
+
+.pull-left[
+
+```r
+data_frame(A = rnorm(350, 75, 11.2),
+           B = rnorm(350, 45, 16),
+           C = rnorm(350, 90, 14.5),
+           D = rnorm(350, 100, 15))%&gt;% 
+  gather(Group, Response, A:D) %&gt;% 
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %&gt;% 
+  # add aes()
+  ggplot(aes(x = Group, y = Response, fill = Sex))+
+  # add geometry
+  geom_violin()+
+  geom_jitter(aes(colour = Sex), alpha = .5)+
+  # Add scale settings
+  scale_fill_viridis(discrete=TRUE)+
+  # add a theme
+  theme_minimal()+
+  # manually adjust the theme
+  theme(legend.position = "top")
+```
+]
+.pull-right[
+&lt;img src="Major_Light_files/figure-html/unnamed-chunk-10-1.png" width="45%" /&gt;
+]
+---
+# GGplot2: full plot
+&lt;img src="Major_Light_files/figure-html/unnamed-chunk-11-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+# GGplot2: Facets
+we can add **+ facet_wrap(~Sex, nrow=1)** to create a faceted plot
+&lt;img src="Major_Light_files/figure-html/unnamed-chunk-12-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+# Example 
+We have a data set of the number of internet users per year and a second data set with the release dates of internet technology and smart devices. The goal is to plot a line plot with points illustrating the rise in internet users per year, with markers for product release dates.
+&lt;/br&gt;&lt;br&gt;
+&lt;/br&gt;&lt;br&gt;
+.pull-left[
+We have two data sets stored in the "Data" folder: 
+
+- InternetUsers.csv
+- Companies.csv
+]
+
+.pull-right[
+Using **dplyr** and the  **%&gt;%** pipe operator you can use a keyboard shortcut **Ctrl+Shift+M** for **%&gt;%** :
+
+- Read Data
+- Filter, Select
+- Output as .tibble object
+]
+---
+# Procedure
+We will chain functions together to produce as little clutter as we can.  
+.pull-left[
+#### Procedure
+
+- Read
+- filter factor levels
+- transform to dates
+- tibble format
+]
+
+.pull-right[
+#### Functions
+
+- **read_csv()**
+- **filter()** from **readr**
+- **mutate()**, from **dplyr**, and **ymd()** from **lubridate**
+- **as.tibble()** from **dplyr**
+]
+---
+# Internet User Data
+.pull-left[
+
+```r
+# Internet user Data
+read.csv("Data/InternetUsers.csv") %&gt;% 
+  # Select only Dec and June
+  filter(Month == "December") %&gt;% 
+  # Enusre Year is malleable
+  mutate(Year = as.character(Year)) %&gt;% 
+  # new data var
+  mutate(monyr = ymd(paste(Year, Month, "1", sep ="-"))) %&gt;% 
+  # to tbl
+  as.tibble() -&gt;&gt; internetusers
+```
+]
+
+.pull-right[
+
+```r
+head(internetusers)
+```
+
+```
+## # A tibble: 6 x 6
+##   Month    Year  NumUsers_Millions Percentage InfoSource        monyr     
+##   &lt;chr&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;             &lt;date&gt;    
+## 1 December 1995                 16 0.40%      IDC               1995-12-01
+## 2 December 1996                 36 0.90%      IDC               1996-12-01
+## 3 December 1997                 70 1.70%      IDC               1997-12-01
+## 4 December 1998                147 3.60%      C.I. Almanac      1998-12-01
+## 5 December 1999                248 4.10%      Nua Ltd.          1999-12-01
+## 6 December 2000                361 5.80%      Internet World S~ 2000-12-01
+```
+
+]
+---
+
+# Company Data
+.pull-left[
+
+```r
+# Company product launches
+read.csv("Data/Companies.csv") %&gt;% 
+  # Change the name of cols
+  set_names("Product", "Company", "Event", "Date", "y") %&gt;% 
+  # Ensure date is a date
+  mutate(Date = ymd(Date)) %&gt;% 
+  filter(Company != "Amazon") %&gt;% 
+  as.tibble() -&gt;&gt; CompDa
+```
+]
+
+.pull-right[
+
+```r
+CompDa
+```
+
+```
+## # A tibble: 8 x 5
+##   Product       Company  Event        Date           y
+##   &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt;        &lt;date&gt;     &lt;int&gt;
+## 1 Social Media  FaceBook Facebook     2006-09-26  1593
+## 2 Desktop       Apple    iTunes Mac   2001-01-09  1400
+## 3 Web Store     Apple    iTunes Store 2003-04-28  1219
+## 4 Object        Apple    iPod         2001-10-23   979
+## 5 Search Engine Google   Google       1997-09-15   570
+## 6 Object        Apple    iPhone       2007-06-29  1919
+## 7 Object        Apple    iPhone 4     2010-06-21  2767
+## 8 Object        Apple    iPad2        2011-03-28  3100
+```
+
+]
+---
+# Plot it all together
+.pull-left[
+- We pipe the data frame into **ggplot2**
+- Set the aesthetics using **aes()**
+- Add the label geometry with the Company Data dataframe
+- Add the point geometry for the labels
+- Add the line geometry for internet users
+- Add points for internet users
+- Format the x scale
+- Add theme elements
+]
+.pull-right[
+
+```r
+# data frame
+internetusers %&gt;% 
+  # pass to ggplot function
+  ggplot(aes(x=monyr, y = NumUsers_Millions))+
+  # Vertical lines for companies
+  geom_label(data = CompDa,
+            aes(x =Date, y = y, 
+                label = Event, 
+                fill = Company,
+                hjust = "right"),colour = "grey10",
+            show.legend = FALSE)+
+  
+  geom_point(data = CompDa,
+             aes(x = Date, y = y), colour = "white")+
+  
+  # Line for internet users
+  geom_line(colour = "grey50")+
+  # Points
+  geom_point(shape = 21,
+             colour = "grey50",
+             fill = "white",
+             # Size is the number of users in millions
+             aes(size = NumUsers_Millions),
+             # No legend for this
+             show.legend = FALSE)+
+  scale_x_date(date_labels = "%Y",
+               breaks = "1 year")+
+  theme_minimal()+
+  theme(axis.text = element_text(colour = "white"),
+        axis.text.x = element_text(angle = 90, colour = "white"),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = "grey10", colour = "grey10"),
+        plot.background = element_rect(fill = "grey10", colour = "grey10"),
+        legend.text = element_text(colour = "white"),
+        legend.title = element_text(colour = "white"))
+```
+]
+---
+#Plot Output
+&lt;img src="Major_Light_files/figure-html/unnamed-chunk-18-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+---
+# Recap
+We used:
+- Dplyr  for data manipulation functions and summaries
+- Magrittr %&gt;%  for piping
+- ggplot2 for plotting
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "zenburn",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -17,10 +17,35 @@ output:
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(dpi=150, out.width = "45%")
+options(stringsAsFactors = FALSE, scipen = 999) 
+# reproducible randomness
+set.seed(42)
+# for colour pallete in boxplot
+library(viridis)
+# for times and dates
+library(lubridate)
+# for %>% , dplyr, ggplot2
+library(tidyverse)
 source("Major_XR_3/02_PlotScript_w.R")
+
 ```
 
+# Todays session
+In todays materials, there are two csv files, a practice script and a solutions script
+</br><br>
+</br><br>
+.pull-left[
+For todays materals    
+Go to https://github.com/SBGalvin/Major-XR.git
+]
+.pull-right[
+<div align="center">
+<img src="Major_XR_3/Images/github-brands.svg"width=300 height=300>
+</div>
+]
 
+.footnote[Github icon: https://fontawesome.com/license]
+---
 # Tidyverse
 Tidyverse is a collection of packages based on the same styling under the **Grammar of Data Manipulation**.  
 A function is a **verb** it does something to arguments
@@ -35,34 +60,24 @@ A function is a **verb** it does something to arguments
 </div>
 
 ]
+???
+So today we're going to talk a little about the tidyverse
+As we can see there are quite a few packages some to do with specialist areas
+However there are core packages, such as dplyr, ggplot2 and magritter that you will use alot
 ---
 # Tidyverse
 
-<style type="text/css">
-#topright {
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: block;
-    height: 100px;
-    width: 100px;
-    background: url(Major_XR_3/Images/tidyverse.svg) no-repeat;
-    text-indent: -999em;
-    text-decoration: none;
-}
-</style>
-
-<a id="topright" href="#" title="TopRight">Top Right Link Text</a>
-
 First we load up the necessary packages and options. 
-If you are missing these packages use `install.packages("tidyverse")`
+If you are missing these packages use **install.packages("tidyverse")**
 </br><br>
 </br><br>
 </br><br>
+
 .pull-left[
-```{r}
-options(stringsAsFactors = FALSE, # so we dont get any awkard factorisation of dates
-        scipen = 999) # values are numeric and not scientific notation
+```{r, eval=FALSE}
+# so we dont get any awkard factorisation of dates
+# values are numeric and not scientific notation
+options(stringsAsFactors = FALSE, scipen = 999) 
 # reproducible randomness
 set.seed(42)
 # for colour pallete in boxplot
@@ -73,6 +88,7 @@ library(lubridate)
 library(tidyverse)
 ```
 ]
+
 .pull-right[
 Loading tidyverse will load a number of useful packages including dplyr, maggritr and ggplot2  
 Lubridate is for dates and times
@@ -91,7 +107,13 @@ Dplyr is a package for manipulating data
 <img src="Major_XR_3/Images/dplyr.svg"width=300 height=300>
 </div>
 ]
+???
+So what is the tidyverse:
 
+- A collection of packages
+- designed under one aesthetic
+- functions are meant to be more readable
+- and have more descriptive names than base R
 ---
 
 # "Ceci n'est pas une pipe"
@@ -164,6 +186,56 @@ y %>% spread(Group, Resp)
 
 ]
 ---
+# Summarising
+Summarising data is pretty quick, easy, and it is formatted for file output
+.pull-left[
+```{r, eval =FALSE}
+data_frame(A = rnorm(350, 75, 11.2),
+           B = rnorm(350, 45, 16),
+           C = rnorm(350, 90, 14.5),
+           D = rnorm(350, 100, 15))%>% 
+  # from wide to long
+  gather(Group, Response, A:D) %>% 
+  # Create Sex variable
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
+  # use grouping variables
+  group_by(Group, Sex) %>%
+  # summary values
+  summarise(N = n(),
+            Mean = mean(Response), # Mean
+            StDev = sd(Response),  # Sd
+            StErr = StDev/sqrt(N), # SE
+            # Confidence intervals
+            `95% L Bound` = Mean - (StErr *1.96),
+            `95% U Bound` = Mean + (StErr *1.96)) %>% 
+  # round the columns
+  mutate_at(3:5, funs(round(., 2)))
+```
+]
+.pull-right[
+```{r, echo=FALSE}
+data_frame(A = rnorm(350, 75, 11.2),
+           B = rnorm(350, 45, 16),
+           C = rnorm(350, 90, 14.5),
+           D = rnorm(350, 100, 15))%>% 
+  # from wide to long
+  gather(Group, Response, A:D) %>% 
+  # Create Sex variable
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
+  # use grouping variables
+  group_by(Group, Sex) %>%
+  # summary values
+  summarise(N = n(),
+            Mean = mean(Response),
+            StDev = sd(Response),
+            StErr = StDev/sqrt(N),
+            `95% L Bound` = Mean - (StErr *1.96),
+            `95% U Bound` = Mean + (StErr *1.96)) %>% 
+  # round the columns
+  mutate_at(4:8, funs(round(., 2)))
+```
+]
+---
 # GGplot2
 GGplot2 is a high quality package for plotting. Layers are bult up from data to produce an output using the + operator
 .pull-left[
@@ -179,21 +251,7 @@ GGplot2 is a high quality package for plotting. Layers are bult up from data to 
 ]
 ---
 # GGplot2
-<style type="text/css">
-#topright {
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: block;
-    height: 100px;
-    width: 100px;
-    background: url(Major_XR_3/Images/ggplot2.svg) no-repeat;
-    text-indent: -999em;
-    text-decoration: none;
-}
-</style>
 
-<a id="topright" href="#" title="TopRight">Top Right Link Text</a>
 .pull-left[
 ```{r, eval=FALSE}
 data_frame(A = rnorm(350, 75, 11.2),
@@ -201,12 +259,12 @@ data_frame(A = rnorm(350, 75, 11.2),
            C = rnorm(350, 90, 14.5),
            D = rnorm(350, 100, 15))%>% 
   gather(Group, Response, A:D) %>% 
-  mutate(G2 = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
   # add aes()
-  ggplot(aes(x = Group, y = Response, fill = G2))+
+  ggplot(aes(x = Group, y = Response, fill = Sex))+
   # add geometry
   geom_violin()+
-  geom_jitter(aes(colour = G2), alpha = .5)+
+  geom_jitter(aes(colour = Sex), alpha = .5)+
   # Add scale settings
   scale_fill_viridis(discrete=TRUE)+
   # add a theme
@@ -222,12 +280,34 @@ data_frame(A = rnorm(350, 75, 11.2),
            C = rnorm(350, 90, 14.5),
            D = rnorm(350, 100, 15))%>% 
   gather(Group, Response, A:D) %>% 
-  mutate(G2 = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
   # add aes()
-  ggplot(aes(x = Group, y = Response, fill = G2))+
+  ggplot(aes(x = Group, y = Response, fill = Sex))+
   # add geometry
   geom_violin()+
-  geom_jitter(aes(colour = G2), alpha = .5)+
+  geom_jitter(aes(colour = Sex), alpha = .5)+
+  # Add scale settings
+  scale_fill_viridis(discrete=TRUE)+
+  # add a theme
+  theme_minimal()+
+  # manually adjust the theme
+  theme(legend.position = "top")
+```
+]
+---
+# GGplot2: full plot
+```{r, echo =FALSE, fig.align='center'}
+data_frame(A = rnorm(350, 75, 11.2),
+           B = rnorm(350, 45, 16),
+           C = rnorm(350, 90, 14.5),
+           D = rnorm(350, 100, 15))%>% 
+  gather(Group, Response, A:D) %>% 
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
+  # add aes()
+  ggplot(aes(x = Group, y = Response, fill = Sex))+
+  # add geometry
+  geom_violin()+
+  geom_jitter(aes(colour = Sex), alpha = .5)+
   # Add scale settings
   scale_fill_viridis(discrete=TRUE)+
   # add a theme
@@ -236,12 +316,35 @@ data_frame(A = rnorm(350, 75, 11.2),
   theme(legend.position = "top")
 ```
 
-]
+---
+# GGplot2: Facets
+we can add **+ facet_wrap(~Sex, nrow=1)** to create a faceted plot
+```{r, echo =FALSE, fig.align='center'}
+data_frame(A = rnorm(350, 75, 11.2),
+           B = rnorm(350, 45, 16),
+           C = rnorm(350, 90, 14.5),
+           D = rnorm(350, 100, 15))%>% 
+  gather(Group, Response, A:D) %>% 
+  mutate(Sex = sample(c("M", "F"), 1400, replace=TRUE)) %>% 
+  # add aes()
+  ggplot(aes(x = Group, y = Response, fill = Sex))+
+  # add geometry
+  geom_violin()+
+  geom_jitter(aes(colour = Sex), alpha = .5)+
+  # Add scale settings
+  scale_fill_viridis(discrete=TRUE)+
+  # add a theme
+  theme_minimal()+
+  # manually adjust the theme
+  theme(legend.position = "top")+
+  facet_wrap(~Sex, nrow = 1)
+```
 
 ---
 # Example 
-
-
+We have a data set of the number of internet users per year and a second data set with the release dates of internet technology and smart devices. The goal is to plot a line plot with points illustrating the rise in internet users per year, with markers for product release dates.
+</br><br>
+</br><br>
 .pull-left[
 We have two data sets stored in the "Data" folder: 
 
@@ -276,10 +379,6 @@ We will chain functions together to produce as little clutter as we can.
 - **mutate()**, from **dplyr**, and **ymd()** from **lubridate**
 - **as.tibble()** from **dplyr**
 ]
----
-# Example
-We have a data set of the number of internet users per year and a second data set with the release dates of internet technology and smart devices. The goal is to plot a line plot with points illustrating the rise in internet users per year, with markers for product release dates.
-
 ---
 # Internet User Data
 .pull-left[
@@ -331,6 +430,11 @@ CompDa
 - We pipe the data frame into **ggplot2**
 - Set the aesthetics using **aes()**
 - Add the label geometry with the Company Data dataframe
+- Add the point geometry for the labels
+- Add the line geometry for internet users
+- Add points for internet users
+- Format the x scale
+- Add theme elements
 ]
 .pull-right[
 ```{r, eval=FALSE}
@@ -377,4 +481,10 @@ internetusers %>%
 ```{r, fig.align='center',echo=FALSE}
 Plot_Comp
 ```
+---
+# Recap
+We used:
+- Dplyr  for data manipulation functions and summaries
+- Magrittr %>%  for piping
+- ggplot2 for plotting
 
